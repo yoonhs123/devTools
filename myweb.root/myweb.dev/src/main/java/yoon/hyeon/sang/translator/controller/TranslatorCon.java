@@ -22,7 +22,7 @@ public class TranslatorCon {
     @RequestMapping(value = "/translator", method = RequestMethod.GET)
     public ModelAndView goPage() throws IOException {
 
-        String aaa = translatorSvc.translate("안녕", "en");   //test
+        String aaa = translatorSvc.translate("안녕", "en");   //testasdf
         String returnURL = "translator/translator";
         ModelAndView mv = new ModelAndView();
         mv.setViewName(returnURL);
