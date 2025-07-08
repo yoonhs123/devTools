@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- configuration status Level
+| 우선순위 |   레벨   |
+| 1      | `OFF`   |
+| 2      | `FATAL` |
+| 3      | `ERROR` |
+| 4      | `WARN`  |
+| 5      | `INFO`  |
+| 6      | `DEBUG` |
+| 7      | `TRACE` |
+| 8      | `ALL`   |
+-->
+<Configuration status="DEBUG">
+    <Appenders>
+
+        <!-- 콘솔 출력 -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="[%d{HH:mm:ss}] [%-5p] %c - %m%n"/>
+        </Console>
+
+        <!-- 통합 로그 -->
+        <RollingFile name="AccessLog" fileName="${sys:catalina.base}/logs/mylogs/access.log"
+                     filePattern="${sys:catalina.base}/logs/access-%d{yyyy-MM-dd}.log.gz">
+            <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss}] [%-5p] %c - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+            </Policies>
+            <DefaultRolloverStrategy max="365"/>
+        </RollingFile>
+
+        <!-- 장애 로그 -->
+        <RollingFile name="ErrorLog" fileName="${sys:catalina.base}/logs/mylogs/error.log"
+                     filePattern="${sys:catalina.base}/logs/error-%d{yyyy-MM-dd}.log.gz">
+            <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss}] [%-5p] %c - %m%n"/>
+            <Filters>
+                <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+            </Policies>
+        </RollingFile>
+
+        <!-- 외부 API 로그 -->
+        <RollingFile name="ApiLog" fileName="${sys:catalina.base}/logs/mylogs/api.log"
+                     filePattern="${sys:catalina.base}/logs/api-%d{yyyy-MM-dd}.log.gz">
+            <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss}] [%-5p] %c - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+            </Policies>
+        </RollingFile>
+
+        <!-- 비동기 처리: 콘솔 + Access + Error -->
+        <Async name="AsyncCommon">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="AccessLog"/>
+            <AppenderRef ref="ErrorLog"/>
+        </Async>
+
+        <!-- 비동기 처리: API 전용 -->
+        <Async name="AsyncApi">
+            <AppenderRef ref="ApiLog"/>
+        </Async>
+
+    </Appenders>
+
+    <Loggers>
+
+        <!-- 외부 API 전용 Logger -->
+        <Logger name="externalApiCall" level="info" additivity="false">
+            <AppenderRef ref="AsyncApi"/>
+        </Logger>
+
+        <!-- 루트 Logger (공통 로그) -->
+        <Root level="info">
+            <AppenderRef ref="AsyncCommon"/>
+        </Root>
+
+    </Loggers>
+
+</Configuration>

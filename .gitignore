@@ -1,0 +1,22 @@
+# IntelliJ 관련
+.idea/
+*.iml
+out/
+
+# 빌드 결과
+target/
+build/
+*.war
+
+# 로그파일
+*.log
+
+# 시스템 파일
+Thumbs.db
+.DS_Store
+
+# 배포 제외 폴더
+hsyoon_property/
+
+# 클래스 파일
+*.class
