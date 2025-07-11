@@ -83,14 +83,15 @@ public class GlobalExceptionHandler {
                 .append("  trace: `" + escapeForJS(fullTrace) + "`")
                 .append("};")
 
-                // fetch로 POST 요청 보내기
-                .append("fetch('/core/errorPopup', {")
-                .append("  method: 'POST',")
-                .append("  headers: { 'Content-Type': 'application/json' },")
-                .append("  body: JSON.stringify(data)")
-                .append("})")
-                .append(".then(response => response.text())")
-                .append(".then(html => { showModal(html); })")
+                // ✅ jQuery Ajax로 POST 요청 전송
+                .append("$.ajax({")
+                .append("  url: '/core/errorPopup',")
+                .append("  type: 'POST',")
+                .append("  contentType: 'application/json; charset=UTF-8',")
+                .append("  dataType: 'text',")
+                .append("  data: JSON.stringify(data),")
+                .append("  success: function(html) { showModal(html); },")
+                .append("});")
 
                 .append("</script>");
 

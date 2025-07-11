@@ -14,7 +14,7 @@ public class ErrorCon {
     @RequestMapping(value = "/errorPopup", method = RequestMethod.POST)
     public ModelAndView errorPopup(@RequestBody Map<String, String> body) {
 
-        String returnURL = "common/error/commonErrorPop";
+        String returnURL = "error/commonErrorPop";
         ModelAndView mv = new ModelAndView();
         mv.setViewName(returnURL);
         mv.addObject("errorMessage", body.get("msg"));
