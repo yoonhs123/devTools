@@ -11,17 +11,20 @@
 | 7      | `TRACE` |
 | 8      | `ALL`   |
 -->
-<Configuration status="DEBUG">
+<Configuration status="WARN">
     <Appenders>
 
         <!-- 콘솔 출력 -->
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout pattern="[%d{HH:mm:ss}] [%-5p] %c - %m%n"/>
+            <Filters>
+                <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
         </Console>
 
         <!-- 통합 로그 -->
-        <RollingFile name="AccessLog" fileName="${sys:catalina.base}/logs/mylogs/access.log"
-                     filePattern="${sys:catalina.base}/logs/access-%d{yyyy-MM-dd}.log.gz">
+        <RollingFile name="CommonLog" fileName="${sys:catalina.base}/logs/mylogs/common.log"
+                     filePattern="${sys:catalina.base}/logs/mylogs/common-%d{yyyy-MM-dd}.log.gz">
             <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss}] [%-5p] %c - %m%n"/>
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1"/>
@@ -31,7 +34,7 @@
 
         <!-- 장애 로그 -->
         <RollingFile name="ErrorLog" fileName="${sys:catalina.base}/logs/mylogs/error.log"
-                     filePattern="${sys:catalina.base}/logs/error-%d{yyyy-MM-dd}.log.gz">
+                     filePattern="${sys:catalina.base}/logs/mylogs/error-%d{yyyy-MM-dd}.log.gz">
             <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss}] [%-5p] %c - %m%n"/>
             <Filters>
                 <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
@@ -39,42 +42,59 @@
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1"/>
             </Policies>
+            <DefaultRolloverStrategy max="365"/>
         </RollingFile>
 
         <!-- 외부 API 로그 -->
-        <RollingFile name="ApiLog" fileName="${sys:catalina.base}/logs/mylogs/api.log"
-                     filePattern="${sys:catalina.base}/logs/api-%d{yyyy-MM-dd}.log.gz">
-            <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss}] [%-5p] %c - %m%n"/>
-            <Policies>
-                <TimeBasedTriggeringPolicy interval="1"/>
-            </Policies>
-        </RollingFile>
+        <Routing name="RoutingApi">
+            <Routes pattern="$${marker}">
+                <Route key="API">
+                    <RollingFile name="ApiLog" fileName="${sys:catalina.base}/logs/mylogs/api.log"
+                                 filePattern="${sys:catalina.base}/logs/mylogs/api-%d{yyyy-MM-dd}.log.gz">
+                        <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss}] [%-5p] %c - %m%n"/>
+                        <Policies>
+                            <TimeBasedTriggeringPolicy interval="1"/>
+                        </Policies>
+                        <DefaultRolloverStrategy max="365"/>
+                    </RollingFile>
+                </Route>
+            </Routes>
+        </Routing>
 
-        <!-- 비동기 처리: 콘솔 + Access + Error -->
+
+
+        <!-- 비동기 처리: 통합처리 -->
         <Async name="AsyncCommon">
+            <AppenderRef ref="CommonLog"/>
+        </Async>
+
+        <!-- 비동기 처리: 에러, 콘솔 -->
+        <Async name="AsyncError">
             <AppenderRef ref="Console"/>
-            <AppenderRef ref="AccessLog"/>
             <AppenderRef ref="ErrorLog"/>
         </Async>
 
         <!-- 비동기 처리: API 전용 -->
         <Async name="AsyncApi">
-            <AppenderRef ref="ApiLog"/>
+            <AppenderRef ref="RoutingApi"/>
         </Async>
 
     </Appenders>
 
     <Loggers>
 
-        <!-- 외부 API 전용 Logger -->
-        <Logger name="externalApiCall" level="info" additivity="false">
-            <AppenderRef ref="AsyncApi"/>
-        </Logger>
-
-        <!-- 루트 Logger (공통 로그) -->
-        <Root level="info">
+        <!-- 루트 Logger -->
+        <Root level="debug">
             <AppenderRef ref="AsyncCommon"/>
+            <AppenderRef ref="AsyncError"/>
+            <AppenderRef ref="AsyncApi"/> <!-- API Marker 로그도 수용 -->
         </Root>
+
+
+        <!-- 외부 API 전용 Logger -->
+        <!--<Logger name="externalApiCall" level="debug" additivity="false">
+            <AppenderRef ref="AsyncApi"/>
+        </Logger>-->
 
     </Loggers>
 

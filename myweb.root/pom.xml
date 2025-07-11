@@ -13,6 +13,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <dev.version>10</dev.version>
         <admin.version>10</admin.version>
+        <core.version>10</core.version>
         <framework.version>10</framework.version>
     </properties>
 
@@ -25,6 +26,7 @@
             <modules>
                 <module>myweb.dev</module>
                 <module>myweb.admin</module>
+                <module>myweb.core</module>
                 <module>myweb.framework</module>
             </modules>
         </profile>

@@ -14,7 +14,7 @@
       faviconPath += "lfc.ico";   //개발
     }
   %>
-  <link rel="shortcut icon" href="${pageContext.request.contextPath}<%= faviconPath%>" type="image/x-icon">
+  <link rel="shortcut icon" href="/core<%= faviconPath%>" type="image/x-icon">
 
   <!-- 스크립트 시작 -->
   <!-- 공통 스크립트 포함 -->
@@ -25,7 +25,7 @@
 
   <!-- css 시작-->
   <!-- 공통 css -->
-  <link class="theme-link" rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/css/default.css">
+  <link class="theme-link" rel="stylesheet" type="text/css" href="/core/resources/css/default.css">
   <!-- translator css -->
   <link class="theme-link" rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/css/translator.css">
   <!-- css 끝 -->

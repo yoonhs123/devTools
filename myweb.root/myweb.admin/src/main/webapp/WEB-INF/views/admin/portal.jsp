@@ -13,9 +13,7 @@
     }
 </style>
 <!-- 외부 리소스 로드 -->
-<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/clock.css">
-<script src="${pageContext.request.contextPath}/resources/js/clock.js"></script>
+<link rel="stylesheet" href="/core/resources/css/clock.css">
+<script src="/core/resources/js/clock.js"></script>
 
-<%--
-<div class="clock"></div>--%>
-<div>test</div>
+<div class="clock"></div>

@@ -15,6 +15,7 @@
     }
 
     function parseJson() {
+
         $.ajax({
             url: "/dev/convert",
             type: "POST",

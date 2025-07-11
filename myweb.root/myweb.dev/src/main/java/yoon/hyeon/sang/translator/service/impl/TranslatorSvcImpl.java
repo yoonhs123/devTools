@@ -14,8 +14,10 @@ import org.springframework.web.client.RestTemplate;
 import yoon.hyeon.sang.translator.dto.Translate;
 import yoon.hyeon.sang.translator.dto.Translations;
 import yoon.hyeon.sang.translator.service.TranslatorSvc;
+import yoon.hyeon.sang.userObj.ApiResponse;
 import yoon.hyeon.sang.util.ApiRequestUtil;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,9 +27,9 @@ public class TranslatorSvcImpl implements TranslatorSvc {
     private static final Logger logger = LogManager.getLogger("externalApiCall");
 
     @Override
-    public String translate(String targetText, String targetLang) {
+    public String translate(String targetText, String targetLang, HttpServletRequest request) {
 
-        String url = "https://api-free.deepl.com/v2/translate";
+        String url = "https://135123we5t/v2/translate";
 
         Map<String, String> headers = new HashMap<>();
         headers.put("Authorization", "DeepL-Auth-Key 3eded9b9-a77d-4a58-ad41-1b3ac0c7e4a1:fx");
@@ -38,42 +40,15 @@ public class TranslatorSvcImpl implements TranslatorSvc {
         body.put("text", targetText);
         body.put("target_lang", targetLang);
 
-        try {
-            ResponseEntity<String> response = ApiRequestUtil.callApi(
-                    url,
-                    HttpMethod.POST,
-                    headers,
-                    body
-            );
 
-            HttpStatus statusCode = response.getStatusCode();
+        ApiRequestUtil apiRequest = new ApiRequestUtil(getClass(), request);
+        ApiResponse response = apiRequest.callApi(url, HttpMethod.POST, headers, body);
 
-            if (statusCode.is2xxSuccessful() && response.getBody() != null) {
+        if (response.isSuccess()){
+            int httpstatusCode = response.getStatusCode();
+            String responseBody = response.getResponseBody();
+        } else {
 
-                //로깅
-                ObjectMapper mapper = new ObjectMapper();
-                String resultJson = mapper.writeValueAsString(response.getBody());
-
-                logger.debug("[ApiRequest INFO]");
-                logger.debug("결과: {}", resultJson);
-
-
-            } else if (statusCode.is4xxClientError()) {
-
-            } else if (statusCode.is5xxServerError()) {
-
-            } else {
-
-            }
-
-        } catch (HttpClientErrorException | HttpServerErrorException e) {
-            // 4xx, 5xx 에러 응답 처리
-
-        } catch (ResourceAccessException e) {
-            // 타임아웃, 연결 오류 등
-
-        } catch (Exception e) {
-            // 그 외 모든 예외
         }
 
         return "";

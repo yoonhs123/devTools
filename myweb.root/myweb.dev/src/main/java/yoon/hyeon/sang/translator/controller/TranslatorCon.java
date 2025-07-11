@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import yoon.hyeon.sang.translator.service.TranslatorSvc;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 @Controller
@@ -20,9 +21,17 @@ public class TranslatorCon {
     private static final Logger logger = LogManager.getLogger(TranslatorCon.class);
 
     @RequestMapping(value = "/translator", method = RequestMethod.GET)
-    public ModelAndView goPage() throws IOException {
+    public ModelAndView goPage(HttpServletRequest request) throws IOException {
+        String returnURL = "translator/translator";
+        ModelAndView mv = new ModelAndView();
+        mv.setViewName(returnURL);
+        return  mv;
+    }
 
-        String aaa = translatorSvc.translate("안녕", "en");
+    @RequestMapping(value = "/test", method = RequestMethod.GET)
+    public ModelAndView test(HttpServletRequest request) throws IOException {
+
+        String aaa = translatorSvc.translate("안녕", "en", request);
         String returnURL = "translator/translator";
         ModelAndView mv = new ModelAndView();
         mv.setViewName(returnURL);

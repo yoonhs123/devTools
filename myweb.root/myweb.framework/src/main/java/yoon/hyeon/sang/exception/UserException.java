@@ -12,10 +12,17 @@ public class UserException extends RuntimeException {
             super(message);
         }
         public NotImplementException(Throwable cause) {
-            super("개발중입니다...", cause);
+            super("Not Implement...", cause);
         }
         public NotImplementException(String message, Throwable cause) {
             super(message, cause);
         }
+    }
+
+    /// URL Encoding 예외처리
+    public static class URLEncodingException extends UserException {
+        public URLEncodingException(String message) { super(message); }
+        public URLEncodingException(Throwable cause) { super("Failed to encode URL", cause); }
+        public URLEncodingException(String message, Throwable cause) { super(message, cause); }
     }
 }

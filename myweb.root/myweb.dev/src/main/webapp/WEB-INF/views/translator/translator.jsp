@@ -16,26 +16,14 @@
 
     function parseJson() {
         $.ajax({
-            url: "/dev/convert",
-            type: "POST",
+            url: "/dev/test",
+            type: "GET",
             contentType: "application/json;charset=UTF-8",
-            data: JSON.stringify({
-                inputString: $("#inputString").val(),
-                kind: $("#kind").val()
-            }),
             async: false,
             success: function(data){
-                if ($("#kind").val() === 'JL' || $("#kind").val() === 'XL'){
-                    $('.result-container').css('white-space', 'normal');    //linear는 자동줄바꿈
-                    $("#parsedJson").text(data);
-                }
-                else {
-                    $('.result-container').css('white-space', 'nowrap');    //prettyprint는 줄바꿈안함
-                    $("#parsedJson").html(data);
-                }
             },
             error: function(response, status, error){
-                $("#parsedJson").html(`<div class='error'>오류 발생: [${status}]:: ${response}\n${error}</div>`);
+
             }
         });
     }
@@ -220,3 +208,5 @@
         </div>
     </div>
 </div>
+
+<iframe id="iframeLayer" name="iframeLayer" style="display:none;"></iframe>
