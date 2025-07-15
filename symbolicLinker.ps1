@@ -4,6 +4,15 @@
 # 3. Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass 입력 후 동의
 # 4. .\symbolicLinker.ps1 입력
 
+# ===========================
+# 현재 디렉토리 이하에서 심볼릭 링크, 대상 찾기
+# Get-ChildItem -Recurse -Attributes ReparsePoint | Select-Object FullName, LinkType, Target
+
+# ===========================
+# 심볼릭 링크 삭제
+# Remove-Item "[FullName]" -Force
+
+
 Write-Host "symbolic linker start"
 Write-Host " made by hsyoon"
 
@@ -41,7 +50,7 @@ $sharedPath = Read-PathWithValidation "Enter a common sharedFiles path (ex: D:\I
 $projectRoot = Read-PathWithValidation "Please enter a project root path (ex: D:\IntelliJ\myWeb\workspace_myWeb)"
 
 # 대상 모듈 리스트 (필요하면 수정)
-$modules = @("dev", "admin", "core")
+$modules = @("dev", "admin")
 
 Write-Host "`n[Verifying Execution Information]"
 Write-Host "common sharedFiles path: $sharedPath"
