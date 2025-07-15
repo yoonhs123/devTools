@@ -27,7 +27,8 @@ public class GlobalExceptionHandler {
     // 사용자 커스텀 예외 처리
     @ExceptionHandler(UserException.class)
     public void handleCustomException(UserException ex, HttpServletRequest request, HttpServletResponse response) throws IOException {
-        sendAlertScript(response, ex.getMessage());
+        String message = ex.getMessage() != null ? ex.getMessage() : "알 수 없는 오류가 발생했습니다. yoonhs3648@gmail.com에 문의하세요";
+        handleErrorWithPopup(response, request, message, ex);
     }
 
     // API관련 커스텀 예외 처리

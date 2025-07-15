@@ -45,15 +45,6 @@
         <put-attribute name="footer" value="/WEB-INF/views/cmn/footer.jsp" />
         <put-attribute name="content" value="/WEB-INF/views/{1}.jsp" />
     </definition>
-
-    <definition name="*/*" template="/WEB-INF/views/cmn/default_layout.jsp">
-        <put-attribute name="title" value="{2}" />
-        <put-attribute name="commonScripts" value="/WEB-INF/views/cmn/commonScripts.jsp" />
-        <put-attribute name="darkModeScripts" value="/WEB-INF/views/cmn/darkMode_setting.jsp" />
-        <put-attribute name="header" value="/WEB-INF/views/cmn/header.jsp" />
-        <put-attribute name="footer" value="/WEB-INF/views/cmn/footer.jsp" />
-        <put-attribute name="content" value="/WEB-INF/views/{1}/{2}.jsp" />
-    </definition>
     <!-- 공통 레이아웃 정의 끝 -->
 
 </tiles-definitions>

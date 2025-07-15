@@ -23,14 +23,14 @@ import java.util.Map;
 
 /// API 요청 템플릿
 ///TODO: 향후 Cookie, User-Agent, Referer 등 인자가 추가될때 추가개발 예정
-public class ApiRequestUtil {
+public class ApiRequester {
 
     private final String clientIP;
     private final Logger logger;
     private static final Marker API_MAKER = MarkerManager.getMarker("API");
 
-    public ApiRequestUtil(Class<?> className, HttpServletRequest request) {
-        this.clientIP = RequestUtils.getClientIp(request);
+    public ApiRequester(Class<?> className, HttpServletRequest request) {
+        this.clientIP = RequestUtil.getClientIp(request);
         this.logger = LogManager.getLogger(className);
     }
 

@@ -59,9 +59,13 @@
     </servlet-mapping>
 
     <!-- 개발/운영 환경 구분 -->
+    <!-- properties 파일로 환경 구분 변경-->
+    <!-- String serverEnv = application.getInitParameter("server.env"); -->
+    <!--
     <context-param>
         <param-name>server.env</param-name>
-        <param-value>dev</param-value> <!-- 개발:dev  운영:real -->
+        <param-value>dev</param-value> &lt;!&ndash; 개발:dev  운영:real &ndash;&gt;
     </context-param>
+    -->
 
 </web-app>

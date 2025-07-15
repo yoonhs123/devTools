@@ -2,7 +2,7 @@ package yoon.hyeon.sang.util;
 
 import javax.servlet.http.HttpServletRequest;
 
-public class RequestUtils {
+public class RequestUtil {
 
     /// 요청자의 IP를 반환합니다
     public static String getClientIp(HttpServletRequest request) {

@@ -15,17 +15,12 @@
     }
 
     function parseJson() {
-        $.ajax({
-            url: "/dev/test",
-            type: "GET",
-            contentType: "application/json;charset=UTF-8",
-            async: false,
-            success: function(data){
-            },
-            error: function(response, status, error){
-
-            }
-        });
+        myAxios.get('/dev/test')
+            .then(res => {
+                // axios는 자동으로 JSON 파싱
+            })
+            .catch(error => {
+            });
     }
 
     function toggle(el) {

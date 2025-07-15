@@ -15,12 +15,4 @@ public class UrlParserCon {
         mv.setViewName(returnURL);
         return  mv;
     }
-
-    @RequestMapping(value = "/fuck", method = RequestMethod.GET)
-    public ModelAndView fucking() {
-        String returnURL = "parser/shit";
-        ModelAndView mv = new ModelAndView();
-        mv.setViewName(returnURL);
-        return mv;
-    }
 }

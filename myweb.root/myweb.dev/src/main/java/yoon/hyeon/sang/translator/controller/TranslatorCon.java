@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
+import yoon.hyeon.sang.exception.UserException;
 import yoon.hyeon.sang.translator.service.TranslatorSvc;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,7 +32,7 @@ public class TranslatorCon {
     @RequestMapping(value = "/test", method = RequestMethod.GET)
     public ModelAndView test(HttpServletRequest request) throws IOException {
 
-        String aaa = translatorSvc.translate("안녕", "en", request);
+        String test = translatorSvc.translate("안녕", "en", request);
         String returnURL = "translator/translator";
         ModelAndView mv = new ModelAndView();
         mv.setViewName(returnURL);
