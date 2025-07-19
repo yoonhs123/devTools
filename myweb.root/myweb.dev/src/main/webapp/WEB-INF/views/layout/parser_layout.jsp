@@ -1,3 +1,4 @@
+<%@ page import="yoon.hyeon.sang.util.PropertiesUtil" %>
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
@@ -6,9 +7,9 @@
     <title><tiles:getAsString name="title" ignore="true" /></title>
 
     <%
-        String serverEnv = application.getInitParameter("server.env");
+        String serverEnv = PropertiesUtil.getProperties("isReal", "Y");
         String faviconPath = "/resources/img/";
-        if ("real".equals(serverEnv)) {
+        if ("Y".equals(serverEnv)) {
             faviconPath += "lfc2.ico";  //운영
         } else {
             faviconPath += "lfc.ico";   //개발

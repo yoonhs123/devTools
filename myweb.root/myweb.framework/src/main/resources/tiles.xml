@@ -36,7 +36,6 @@
     </definition>
 
 
-
     <!-- 공통 레이아웃 정의 -->
     <definition name="*" template="/WEB-INF/views/cmn/default_layout.jsp">
         <put-attribute name="title" value="{1}" />

@@ -191,7 +191,7 @@
 <div class="container">
     <div class="left">
         <span style="float:right">
-            <label for="kind" class="label-inline">Choose Option
+            <label for="kind" class="select-label">Choose Option
             <select id="kind" class="select-inline">
                 <option value="JPP">JSON Pretty Print</option>
                 <option value="JL">JSON Linearize</option>

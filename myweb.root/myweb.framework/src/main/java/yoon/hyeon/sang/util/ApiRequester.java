@@ -67,7 +67,7 @@ public class ApiRequester {
         // HTTP METHOD에 따라 URL, BODY 처리
         if (method == HttpMethod.GET) {
             if (bodyMap != null && !bodyMap.isEmpty()) {
-                finalUrl = appendQueryParams(url, bodyMap);
+                finalUrl = appendQueryParams(url, bodyMap); //GET요청에 BODY값이 있으면 쿼리스트링으로 변환
             }
             requestEntity = new HttpEntity<>(headers);
         } else if (MediaType.APPLICATION_FORM_URLENCODED.equals(contentType)) {     //Content-Type = application/x-www-form-urlencoded 인 경우
@@ -125,7 +125,7 @@ public class ApiRequester {
         }
     }
 
-    private String appendQueryParams(String url, Map<String, ?> params) {
+    public String appendQueryParams(String url, Map<String, ?> params) {
         if (params == null || params.isEmpty()) return url;
 
         StringBuilder sb = new StringBuilder(url);

@@ -34,4 +34,5 @@
 <script type="text/javascript" src="/core/resources/js/jquery-3.6.0.min.js"></script>
 <script type="text/javascript" src="/core/resources/js/axios.min.js"></script>
 <script type="text/javascript" src="/core/resources/js/common.js"></script>
+<script type="text/javascript" src="/core/resources/js/utils.js"></script>
 <script type="text/javascript" src="/core/resources/js/modalUtil.js"></script>

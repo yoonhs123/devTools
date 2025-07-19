@@ -6,12 +6,14 @@
 
 .left {
     width: 600px;
-    flex: none;
     padding: 10px;
     border-right: 1px solid #444;
     box-sizing: border-box;
     background-color: #2a2a2a;
     color: #ccc;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
 .right {
@@ -21,6 +23,52 @@
     box-sizing: border-box;
     background-color: #252525;
     color: #ddd;
+}
+
+.toolbar {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    align-items: center;
+}
+
+/* 입력 박스 */
+#inputLang-wrapper {
+    width: 100%;
+}
+
+.input-group {
+    margin-bottom: 10px;
+}
+
+.textarea-wrapper {
+    position: relative; /* delete-btn 위치 기준 */
+}
+
+.textarea-wrapper textarea {
+    width: 100%;
+    height: 100px;
+    resize: none;
+    box-sizing: border-box;
+    padding: 10px;
+    padding-right: 40px; /* delete 버튼 공간 확보 */
+}
+
+.delete-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: #254f73;
+    color: #aaaa;
+    border: none;
+    border-radius: 3px;
+    padding: 2px 6px;
+    cursor: pointer;
+}
+
+.add-button-wrapper {
+    display: flex;
+    justify-content: flex-end;
 }
 
 .result-wrapper {
@@ -55,26 +103,3 @@
 .result-wrapper:hover .copy-btn {
     display: block;
 }
-
-.json-key { color: #80bfff; }
-.json-string { color: #a0d6b4; }
-.json-arr-symbol { color: #b66b00; }
-.json-symbol { color: #5f9ea0; }
-.json-number { color: #ffb74d; }
-.json-boolean { color: #c792ea; }
-.json-null { color: #888; font-style: italic; }
-
-.xml-tag     { color: #80bfff; }
-.xml-attr    { color: #c792ea; }
-.xml-attrval { color: #a0d6b4; }
-.xml-text    { color: #ddd; }
-
-.xml-symbol { color: #5f9ea0; }
-.xml-toggle { cursor: pointer; }
-.xml-prefix { color: #c792ea; }
-.xml-localName { color: #80bfff; }
-.xml-attrName { color: #ffb74d; }
-.xml-attrValue { color: #c792ea; }
-.xml-textContent { color: #a0d6b4; }
-
-.error { color: #ff6666; font-weight: bold; }

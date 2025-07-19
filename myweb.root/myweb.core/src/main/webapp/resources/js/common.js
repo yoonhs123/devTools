@@ -184,82 +184,138 @@ function myFetch(input, init = {}) {
 //region Common axios 설정
 /* 사용예시
 //get방식: axios.get(url, config) 형식으로 작성
-myAxios.get('/api/test', {
-  headers: {
-    'Authorization': 'Bearer your-token', //헤더 설정
-  },
-  params: {
-    userId: 123,       //쿼리 스트링: /api/test?userId=123
-    active: true
-  }
-})
-.then(res => {
-  // axios는 자동으로 JSON 파싱
-  console.log(res.data.message);      //"처리 완료"
-  console.log(res.data.data.name);    //"홍길동"
-})
-.catch(error => {
-  console.error('에러 발생:', error);
-});
+
+    //요청 (쿼리스트링으로 데이터 전송, Content-Type 없음)
+    myAxios.get('/api/test', {
+      headers: {
+        'Authorization': 'Bearer your-token' // 인증 토큰 등 헤더 설정
+      },
+      params: {
+        userId: 123,       // 자동으로 /api/test?userId=123&active=true 형태로 변환됨
+        active: true
+      }
+    })
+    .then(res => {
+      console.log(res.data.message);      //"처리 완료"
+      console.log(res.data.data.name);    //"홍길동"
+    })
+    .catch(error => {
+      console.error('에러 발생:', error);
+    });
+
+    //서버 방식 1: HttpServletRequest로 받는 경우
+    @RequestMapping(value = "/api/test", method = RequestMethod.GET)
+    public ModelAndView goPage(HttpServletRequest request) {
+        String userId = request.getParameter("userId");
+        String active = request.getParameter("active");
+        ...
+    }
+
+    //서버 방식 2: @RequestParam으로 받는 경우
+    @RequestMapping(value = "/api/test", method = RequestMethod.GET)
+    public @ResponseBody Map<String, Object> getUser(@RequestParam int userId, @RequestParam boolean active) {
+        ...
+    }
+
 
 //post방식: axios.post(url, JSON-data, config) 형식으로 작성
-myAxios.post('/api/test',
-  {
-    userId: 123,               // 요청 본문 body (JSON으로 자동 직렬화됨)
-    name: '홍길동'
-  },
-  {
-    headers: {
-      'Authorization': 'Bearer your-token', //헤더 설정
+
+    //요청 (Content-Type: application/json)
+    myAxios.post('/api/test',
+      {
+        userId: 123,
+        name: '홍길동'
+      }
+    )
+    .then(res => {
+      console.log(res.data.message);      //"처리 완료"
+      console.log(res.data.data.name);    //"홍길동"
+    })
+    .catch(error => {
+      console.error('에러 발생:', error);
+    });
+
+    //서버
+    @RequestMapping(value = "/api/test", method = RequestMethod.POST)
+    public @ResponseBody Map<String, Object> postJson(@RequestBody Map<String, Object> payload) {
+        String userId = String.valueOf(payload.get("userId"));
+        String name = String.valueOf(payload.get("name"));
+        ...
     }
-  }
-)
-.then(res => {
-  // axios는 자동으로 JSON 파싱
-  console.log(res.data.message);      //"처리 완료"
-  console.log(res.data.data.name);    //"홍길동"
-})
-.catch(error => {
-  console.error('에러 발생:', error);
-});
+
 
 //post방식: axios.post(url, urlencoded-data, config) 형식으로 작성
-const params = new URLSearchParams();
-params.append('userId', 123);
-params.append('name', '홍길동');
-axios.post('/api/test', params, {
-  headers: {
-    'Content-Type': 'application/x-www-form-urlencoded'
-  }
-});
+
+    //요청 (Content-Type: application/x-www-form-urlencoded)
+    const params = new URLSearchParams();
+    params.append('userId', 123);
+    params.append('name', '홍길동');
+
+    axios.post('/api/test', params, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    });
+
+    //서버
+    @RequestMapping(value = "/api/test", method = RequestMethod.POST)
+    public @ResponseBody Map<String, Object> postForm(HttpServletRequest request) {
+        String userId = request.getParameter("userId");
+        String name = request.getParameter("name");
+        ...
+    }
+
 
 //post방식: axios.post(url, multipart/form-data, config) 형식으로 작성
-const formData = new FormData();
-formData.append('file', fileInput.files[0]);    // 파일
-formData.append('userId', 123);                 // 일반 필드
 
-axios.post('/api/upload', formData, {
-  headers: {
-    'Content-Type': 'multipart/form-data'   // 실제로는 브라우저가 boundary 붙여줌
-  }
-});
+    //요청 (Content-Type: multipart/form-data)
+    const formData = new FormData();
+    formData.append('file', fileInput.files[0]);
+    formData.append('userId', 123);
 
-//put방식: axios.post(url, JSON-data, config) 형식으로 작성
-axios.put('/api/user/123',
-  { name: '홍길동' },
-  {
-    headers: {
-      'Content-Type': 'application/json'
+    axios.post('/api/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+
+    //서버
+    @RequestMapping(value = "/api/upload", method = RequestMethod.POST)
+    public @ResponseBody String upload(@RequestParam("file") MultipartFile file,
+                                       @RequestParam("userId") int userId) {
+        ...
     }
-  }
-);
+
+
+//put방식: axios.put(url, JSON-data, config) 형식으로 작성
+
+    //요청 (Content-Type: application/json)
+    axios.put('/api/user/123',
+      {
+        name: '홍길동'
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    //서버
+    @RequestMapping(value = "/api/user/{id}", method = RequestMethod.PUT)
+    public @ResponseBody Map<String, Object> updateUser(@PathVariable int id,
+                                                        @RequestBody Map<String, Object> payload) {
+        String name = String.valueOf(payload.get("name"));
+        ...
+    }
 */
+
+
 //공통 axios 인스턴스 생성
 const myAxios = axios.create({
     //baseURL: '',  //모든 요청에 붙는 기본 경로. myAxios.get('/user')는 실제로 [baseURL값]/user 요청이 됨
     //timeout: 10000, //10초 타임아웃. 요청이 이 시간(ms)을 초과하면 자동으로 요청을 취소하고 에러 발생
     headers: {  //요청마다 자동으로 포함되는 HTTP 헤더
-        'Content-Type': 'application/json; charset=UTF-8',
         'X-Requested-With': 'XMLHttpRequest'    //서버가 이 요청이 AJAX인지 구분할 수 있게 해줌
     }
 });

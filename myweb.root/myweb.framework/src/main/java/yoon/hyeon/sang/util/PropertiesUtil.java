@@ -54,17 +54,18 @@ public class PropertiesUtil {
         }
     }
 
-    // getProperties 메서드들 - 로딩은 서버 시작 시 이미 되었으므로 그냥 반환
+    //서버 시작 직후 bean을 생성하려할때 init()이 실행되기 전일 수 있음
+    //서비스에서 프로퍼티 값을 읽을려고할때 bean이 없다고 에러날수있으니까 loaded 값을 통해 init()을 호출하는 방어코드 추가
     public static String getProperties(String key) {
         if (!loaded) {
-            throw new IllegalStateException("Properties not loaded. Call load() at startup.");
+            init();
         }
         return props.getProperty(key);
     }
 
     public static String getProperties(String key, String defaultValue) {
         if (!loaded) {
-            throw new IllegalStateException("Properties not loaded. Call load() at startup.");
+            init();
         }
         return props.getProperty(key, defaultValue);
     }

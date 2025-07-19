@@ -49,7 +49,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
-            <version>5.3.33</version> <!-- 또는 원하는 최신 호환 버전 -->
+            <version>5.3.33</version>
         </dependency>
 
         <!-- JSP 지원을 위한 JSTL -->
@@ -114,6 +114,7 @@
         <!-- Apache Tiles 3 end -->
 
         <!-- log4j -->
+        <!-- 기존 log4j-core, api -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
@@ -124,9 +125,44 @@
             <artifactId>log4j-api</artifactId>
             <version>2.20.0</version>
         </dependency>
+
+        <!-- SLF4J 연동용 -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>2.20.0</version>
+        </dependency>
+
+        <!-- Actions/Delete 플러그인 기능용 -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-layout-template-json</artifactId>
+            <version>2.20.0</version>
+        </dependency>
+
+        <!-- Disruptor (AsyncAppender 안정성) -->
+        <dependency>
+            <groupId>com.lmax</groupId>
+            <artifactId>disruptor</artifactId>
+            <version>3.4.4</version>
+        </dependency>
         <!-- log4j End -->
 
+        <!-- Redis -->
+        <!-- Redis 클라이언트: Lettuce -->
+        <dependency>
+            <groupId>io.lettuce</groupId>
+            <artifactId>lettuce-core</artifactId>
+            <version>6.1.8.RELEASE</version>
+        </dependency>
 
+        <!-- Spring Redis -->
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-redis</artifactId>
+            <version>2.7.6</version>
+        </dependency>
+        <!-- Redis End-->
     </dependencies>
 
     <build>

@@ -32,7 +32,7 @@ html, body {
     cursor: not-allowed;
 }
 
-.label-inline {
+.select-label {
     display: inline-block;
     padding: 8px 12px;
     margin-top: 8px;
@@ -47,17 +47,29 @@ html, body {
 }
 
 .select-inline {
-    padding: 8px 12px;
+    padding: 8px 36px 8px 12px;
     font-size: 14px;
     font-weight: 500;
     color: #aaaa;
     background-color: #2f2f2f;
     border: 1px solid #555;
     border-radius: 4px;
-    appearance: none; /* 기본 브라우저 스타일 제거 */
+
+    /* 기본 브라우저 스타일 제거 */
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg width='12' height='8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23666' stroke-width='2' fill='none' fill-rule='evenodd'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 12px 8px;
+
     cursor: pointer;
-    margin-left: 6px;
     transition: border-color 0.2s ease;
+
+    width: auto;       /* 글자 길이에 따라 자동 너비 */
+    min-width: 100px;  /* 최소 너비 설정 */
 }
 
 .select-inline:hover {
@@ -68,6 +80,19 @@ html, body {
     outline: none;
     border-color: #336699;
     box-shadow: 0 0 0 2px rgba(51, 102, 153, 0.5);
+}
+
+.select-inline-disabled {
+    background-color: #1f1f1f;
+    color: #666;
+    border-color: #444;
+    cursor: not-allowed;
+}
+
+.select-label-disabled {
+    background-color: #2a2a2a;
+    color: #555;
+    border-color: #444;
 }
 
 textarea {
@@ -120,6 +145,20 @@ textarea:focus {
     font-size: 18px;
     z-index: 9999;
     box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+.checkbox-label {
+    display: inline-block;
+    padding: 8px 12px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+input[type="checkbox"] {
+    margin: 0 4px 0 0;
+    cursor: pointer;
+    accent-color: #254f73;
+    transform: translateY(1px);
 }
 
 .toggle {

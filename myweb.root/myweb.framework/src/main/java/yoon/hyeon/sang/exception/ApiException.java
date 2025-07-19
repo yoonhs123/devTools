@@ -21,4 +21,10 @@ public class ApiException extends RuntimeException {
         public NoHttpResponseException(Throwable cause) { super("Bad HTTP Response", cause); }
         public NoHttpResponseException(String message, Throwable cause) { super(message, cause); }
     }
+
+    public static class ApiResponseException extends ApiException {
+        public ApiResponseException(String message) { super(message); }
+        public ApiResponseException(Throwable cause) { super("Api Response Error", cause); }
+        public ApiResponseException(String message, Throwable cause) { super(message, cause); }
+    }
 }

@@ -1,33 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:cache="http://www.springframework.org/schema/cache"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+       xsi:schemaLocation="
+         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+         http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd">
 
-    <!--
-    class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" 는
-    Spring에서 속성(프로퍼티) 치환을 가능하게 해주는 스프링 설정 지원 클래스(bean) => 스프링 3이상 부터는 deprecated 돼서 내 로컬프로젝트에서는 안쓴다
+        <!--Deprecated... 레디스관련 설정은 Java Config로 대체 -->
+<!--    &lt;!&ndash; Redis 연결 설정 (비밀번호는 프로퍼티에서 로드) &ndash;&gt;-->
+<!--    <bean id="redisConnectionFactory" class="org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory">-->
+<!--        <constructor-arg value="localhost"/> &lt;!&ndash; host &ndash;&gt;-->
+<!--        <constructor-arg value="6379"/>     &lt;!&ndash; port &ndash;&gt;-->
+<!--        <property name="password" value="#{T(yoon.hyeon.sang.util.PropertiesUtil).getProperty('redis.pwd')}"/>-->
+<!--    </bean>-->
 
-    PropertyPlaceholderConfigurer는 .properties 파일의 key=value들을 Spring의 내부 프로퍼티 시스템(Environment)에 넣어준다
-    => 내 로컬프로젝트에서 PropertiesUtil은 EnvironmentAware를 구현한 클래스이고, Spring이 초기화되는 시점에 Environment 객체를 자동으로 주입한다
+<!--    &lt;!&ndash; Redis Template &ndash;&gt;-->
+<!--    <bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate">-->
+<!--        <property name="connectionFactory" ref="redisConnectionFactory"/>-->
+<!--        <property name="keySerializer">-->
+<!--            <bean class="org.springframework.data.redis.serializer.StringRedisSerializer"/>-->
+<!--        </property>-->
+<!--        <property name="valueSerializer">-->
+<!--            <bean class="org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer"/>-->
+<!--        </property>-->
+<!--    </bean>-->
 
-    <주의>
-    키 중복 여부 : 여러파일에 동일한 key가 있으면, 먼저 로드된 파일이 우선
-    순서 중요	: Spring은 PropertyPlaceholderConfigurer가 등록된 순서대로 로딩
-    잘못된 키 요청	해당 키가 없으면 null 반환
+<!--    &lt;!&ndash; 캐시 매니저 &ndash;&gt;-->
+<!--    <bean id="cacheManager" class="org.springframework.data.redis.cache.RedisCacheManager"-->
+<!--          factory-method="builder">-->
+<!--        <constructor-arg ref="redisConnectionFactory"/>-->
+<!--    </bean>-->
 
-    locations	로드하는 .properties 파일 경로 (classpath 또는 file URL)
-    ignoreUnresolvablePlaceholders	${unknown.key}가 있어도 예외 던지지 않고 무시
-    ignoreResourceNotFound	파일이 없어도 에러 발생하지 않고 무시
-    -->
-
-    <bean id="propertyConfigurer" class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
-        <property name="ignoreUnresolvablePlaceholders" value="true" />
-        <property name="ignoreResourceNotFound" value="true" />
-        <property name="locations">
-            <list>
-                <value>file://${DEPLOY_PATH}/hsyoon_property/globals.properties</value>
-            </list>
-        </property>
-    </bean>
+<!--    &lt;!&ndash; @Cacheable 사용 가능하도록 &ndash;&gt;-->
+<!--    <cache:annotation-driven cache-manager="cacheManager" proxy-target-class="true"/>-->
 
 
 </beans>

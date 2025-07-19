@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.net.URLEncoder;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -24,10 +23,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({ IOException.class, SQLException.class }) 처럼 여러 예외를 한번에 처리할 수 도 있다
     */
 
+    private static final Logger logger = LogManager.getLogger(GlobalExceptionHandler.class);
+
     // 사용자 커스텀 예외 처리
     @ExceptionHandler(UserException.class)
     public void handleCustomException(UserException ex, HttpServletRequest request, HttpServletResponse response) throws IOException {
         String message = ex.getMessage() != null ? ex.getMessage() : "알 수 없는 오류가 발생했습니다. yoonhs3648@gmail.com에 문의하세요";
+        logger.error(message, ex);
         handleErrorWithPopup(response, request, message, ex);
     }
 
@@ -35,6 +37,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ApiException.class)
     public void handleApiException(ApiException ex, HttpServletRequest request, HttpServletResponse response) throws IOException {
         String message = ex.getMessage() != null ? ex.getMessage() : "알 수 없는 오류가 발생했습니다. yoonhs3648@gmail.com에 문의하세요";
+        logger.error(message, ex);
         handleErrorWithPopup(response, request, message, ex);
     }
 
@@ -42,6 +45,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public void handleAllExceptions(Exception ex, HttpServletRequest request, HttpServletResponse response) throws IOException {
         String message = ex.getMessage() != null ? ex.getMessage() : "알 수 없는 오류가 발생했습니다. yoonhs3648@gmail.com에 문의하세요";
+        logger.error(message, ex);
         handleErrorWithPopup(response, request, message, ex);
     }
 
@@ -49,6 +53,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     public void handleRuntimeException(RuntimeException ex, HttpServletRequest request, HttpServletResponse response) throws IOException {
         String message = ex.getMessage() != null ? ex.getMessage() : "알 수 없는 오류가 발생했습니다. yoonhs3648@gmail.com에 문의하세요";
+        logger.error(message, ex);
         handleErrorWithPopup(response, request, message, ex);
     }
 
@@ -77,22 +82,23 @@ public class GlobalExceptionHandler {
 
         StringBuilder script = new StringBuilder();
 
-        script.append("<script>")
+        script.append("<script type=\"text/javascript\" src=\"/core/resources/js/modalUtil.js\"></script>")
+                .append("<script>")
                 .append("const data = {")
                 .append("  msg: `" + escapeForJS(message) + "`,")
                 .append("  url: `" + escapeForJS(url) + "`,")
                 .append("  trace: `" + escapeForJS(fullTrace) + "`")
                 .append("};")
 
-                // ✅ jQuery Ajax로 POST 요청 전송
-                .append("$.ajax({")
-                .append("  url: '/core/errorPopup',")
-                .append("  type: 'POST',")
-                .append("  contentType: 'application/json; charset=UTF-8',")
-                .append("  dataType: 'text',")
-                .append("  data: JSON.stringify(data),")
-                .append("  success: function(html) { showModal(html); },")
-                .append("});")
+                .append("fetch('/core/errorPopup', {")
+                .append("  method: 'POST',")
+                .append("  headers: {")
+                .append("    'Content-Type': 'application/json; charset=UTF-8'")
+                .append("  },")
+                .append("  body: JSON.stringify(data)")
+                .append("})")
+                .append(".then(response => response.text())")
+                .append(".then(html => { showModal(html); })")
 
                 .append("</script>");
 
