@@ -60,13 +60,13 @@ public class PropertiesUtil {
         if (!loaded) {
             init();
         }
-        return props.getProperty(key);
+        return props.getProperty(key).trim();
     }
 
     public static String getProperties(String key, String defaultValue) {
         if (!loaded) {
             init();
         }
-        return props.getProperty(key, defaultValue);
+        return props.getProperty(key, defaultValue).trim();
     }
 }

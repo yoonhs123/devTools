@@ -5,6 +5,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -34,6 +35,31 @@ public class RedisUtil {
 
     public boolean hasKey(String key) {
         return Boolean.TRUE.equals(redisTemplate.hasKey(key));
+    }
+
+    // 키가 없거나, 값이 null 또는 빈객체 일경우 false
+    public boolean hasValue(String key) {
+        if (!hasKey(key)) {
+            return false;  // 키가 없으면 빈 값으로 간주
+        }
+        Object value = redisTemplate.opsForValue().get(key);
+
+        if (value == null) return false;
+
+        if (value instanceof String) {
+            return !((String) value).isEmpty();
+        }
+        if (value instanceof Collection<?>) {
+            return !((Collection<?>) value).isEmpty();
+        }
+        if (value instanceof Map<?, ?>) {
+            return !((Map<?, ?>) value).isEmpty();
+        }
+        if (value.getClass().isArray()) {
+            return java.lang.reflect.Array.getLength(value) != 0;
+        }
+
+        return false; // 기타는 빈 값 아님
     }
 
     public void delete(String key) {

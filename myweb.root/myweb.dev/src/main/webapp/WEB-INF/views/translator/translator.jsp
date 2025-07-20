@@ -27,7 +27,7 @@
     });
     
     let inputCount = 1;
-    const targetLangList = JSON.parse('${targetLangString}');
+    const targetLangList = JSON.parse('${targetLangStr}');
 
     function addTarget() {
         inputCount++;

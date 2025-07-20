@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import yoon.hyeon.sang.exception.ApiException;
@@ -13,12 +14,10 @@ import yoon.hyeon.sang.translator.service.TranslatorSvc;
 import yoon.hyeon.sang.userObj.ApiResponse;
 import yoon.hyeon.sang.util.ApiRequester;
 import yoon.hyeon.sang.util.PropertiesUtil;
+import yoon.hyeon.sang.util.RedisUtil;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class TranslatorSvcImpl implements TranslatorSvc {
@@ -26,8 +25,18 @@ public class TranslatorSvcImpl implements TranslatorSvc {
     private static final Logger logger = LogManager.getLogger(TranslatorSvcImpl.class);
     public static final String apiKey = "DeepL-Auth-Key " + PropertiesUtil.getProperties("translator.api.key");
 
+    @Autowired
+    private RedisUtil redisUtil;
+
     @Override
     public List<Languages> getLanguage(String destination, HttpServletRequest request) {
+
+        String redisKey = "lang.".concat(destination);
+        long timeoutMillis = 30 * 60 * 1000;
+        if (redisUtil.hasValue(redisKey)) {
+            return (List<Languages>) redisUtil.get(redisKey);
+        }
+
         String url = "https://api-free.deepl.com/v2/languages";
 
         Map<String, String> params = new HashMap<>();
@@ -43,8 +52,33 @@ public class TranslatorSvcImpl implements TranslatorSvc {
             ApiResponse response = apiRequester.callApi(apiRequester.appendQueryParams(url, params), HttpMethod.GET, headers);
             if (response.isSuccess()) {
                 ObjectMapper mapper = new ObjectMapper();
+                List<Languages> languages = mapper.readValue(response.getResponseBody(), new TypeReference<List<Languages>>() {});
 
-                return mapper.readValue(response.getResponseBody(), new TypeReference<List<Languages>>() {});
+                languages.sort(Comparator.comparingInt(lang -> {
+
+                    if (destination.equals("source")){
+                        switch (lang.getLanguage().toUpperCase()) {
+                            case "KO": return 0;
+                            case "EN": return 1;
+                            case "ZH": return 2;
+                            case "JA": return 3;
+                            default: return 4;
+                        }
+                    }
+                    else {
+                        switch (lang.getLanguage().toUpperCase()) {
+                            case "KO": return 0;
+                            case "EN-US": return 1;
+                            case "ZH": return 2;    //chinese simplified
+                            case "ZH-HANT": return 3;   //chinese traditional
+                            case "JA": return 4;
+                            default: return 5;
+                        }
+                    }
+                }));
+
+                redisUtil.set(redisKey, languages, timeoutMillis);
+                return languages;
             } else {
                 return Collections.emptyList();
             }
