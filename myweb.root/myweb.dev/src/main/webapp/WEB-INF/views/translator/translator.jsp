@@ -2,6 +2,10 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <script>
+    let inputCount = 1;
+    const targetLangList = JSON.parse('${targetLangStr}');
+    let latestInputValue = '';
+
     $(document).ready(function () {
         const $checkbox = $('#autoLan');
         const $select = $('#sourceLang');
@@ -21,13 +25,26 @@
         }
 
         $checkbox.on('change', updateSelectState);
-
         // 초기 설정
         updateSelectState();
+
+        const mainInput = $('#inputString_1');
+        if (mainInput.length > 0) {
+            latestInputValue = mainInput.val(); // 초기값 저장
+
+            mainInput.on('input', function () {
+                latestInputValue = mainInput.val(); // 최신 값 업데이트
+
+                for (let i = 2; i <= inputCount; i++) {
+                    const targetTextarea = $('#inputString_' + i);
+                    if (targetTextarea.length > 0) {
+                        targetTextarea.val(latestInputValue);
+                    }
+                }
+            });
+        }
+
     });
-    
-    let inputCount = 1;
-    const targetLangList = JSON.parse('${targetLangStr}');
 
     function addTarget() {
         inputCount++;
@@ -38,7 +55,7 @@
         group.className = "input-group";
         group.id = "group_" + inputCount;
 
-        // 1. select 영역 (div 따로)
+        // 1. select 영역
         const selectLine = document.createElement("div");
         const select = document.createElement("select");
         select.id = "targetLang_" + inputCount;
@@ -46,7 +63,7 @@
 
         for (let lang of targetLangList) {
             const option = document.createElement("option");
-            option.value = lang.code;
+            option.value = lang.language;
             option.text = lang.name;
             select.appendChild(option);
         }
@@ -56,7 +73,7 @@
         selectLine.style.marginBottom = "5px";
         selectLine.appendChild(select);
 
-        // 2. textarea + delete 버튼 감싸는 div
+        // 2. textarea + delete버튼
         const textareaWrapper = document.createElement("div");
         textareaWrapper.className = "textarea-wrapper";
 
@@ -65,6 +82,9 @@
         textarea.name = "inputString";
         textarea.spellcheck = false;
         textarea.placeholder = "번역할 내용을 입력하세요";
+
+        textarea.readOnly = true;
+        textarea.value = typeof latestInputValue === 'string' ? latestInputValue : '';
 
         const deleteBtn = document.createElement("button");
         deleteBtn.className = "delete-btn";
@@ -88,22 +108,53 @@
         }
     }
 
-    function translate() {
-        myAxios.post('/dev/translate',
-            {
-                inputString: $("#inputString").val(),
-                targetLang: $("#targetLang").val()
-            }
-        )
+    function doTranslate() {
+        const targetList = [];
+
+        $("[id^='inputString_']").each(function () {
+            const idSuffix = this.id.split("_")[1];
+            const targetLang = $("#targetLang_" + idSuffix).val();
+            targetList.push(targetLang);
+        });
+        const isAutoLan = $('#autoLan').is(':checked');
+
+        const bodyData = {
+            targetList: targetList, //도착언어
+            sourceLang: isAutoLan ? "" : $('#sourceLang').val(),    //출발언어
+            content: $('#inputString_1').val()  //번역할 내용
+        };
+
+        myAxios.post('/dev/translate',bodyData)
             .then(res => {
-                // axios는 자동으로 JSON 파싱
-                console.log(res.data.message);      //"처리 완료"
-                console.log(res.data.data.name);    //"홍길동"
+                const translateList = res.data;
+                const container = document.getElementById('transResult');
+                container.innerHTML = '';
+
+                translateList.forEach((item, index) => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.classList.add('translate-item');
+
+                    const langDiv = document.createElement('div');
+                    langDiv.classList.add('target-lang');
+                    langDiv.textContent = item.targetLang;
+
+                    const textDiv = document.createElement('div');
+                    textDiv.classList.add('translated-text');
+                    textDiv.textContent = item.text;
+
+                    itemDiv.onclick = function () {
+                        copyContent(itemDiv);
+                    };
+
+                    itemDiv.appendChild(langDiv);
+                    itemDiv.appendChild(textDiv);
+
+                    container.appendChild(itemDiv);
+                });
             })
     }
 
-    function copyResult() {
-        var element = document.getElementById('parsedJson');
+    function copyContent(element) {
         var selection = window.getSelection();
         selection.removeAllRanges();
 
@@ -159,7 +210,7 @@
                         </c:forEach>
                     </select>
                 </label>
-                <button class="btn" onclick="translate()">Convert</button>
+                <button class="btn" onclick="doTranslate()">Convert</button>
             </span>
         </div>
         <div id="inputLang-wrapper">
@@ -183,9 +234,8 @@
     <div class="right" id="result">
         <div class="copy-success-message" id="copy-success-message">✅ 복사 완료</div>
         <div class="result-wrapper">
-            <button class="copy-btn" onclick="copyResult()">복사</button>
             <!-- 결과 -->
-            <div id="parsedJson" class="result-container"></div>
+            <div id="transResult" class="result-container"></div>
         </div>
     </div>
 </div>

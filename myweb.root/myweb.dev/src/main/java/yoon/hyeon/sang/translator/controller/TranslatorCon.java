@@ -1,5 +1,6 @@
 package yoon.hyeon.sang.translator.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,7 +12,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import yoon.hyeon.sang.translator.dto.Languages;
+import yoon.hyeon.sang.translator.dto.TranslateResponse;
 import yoon.hyeon.sang.translator.service.TranslatorSvc;
+import yoon.hyeon.sang.util.JsonConverter;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -45,15 +48,16 @@ public class TranslatorCon {
     }
 
     @RequestMapping(value = "/translate", method = RequestMethod.POST)
-    public @ResponseBody Map<String, String> translate(HttpServletRequest request, @RequestBody Map<String, Object> requestBody) {
+    public @ResponseBody List<TranslateResponse.Translations> translate(HttpServletRequest request, @RequestBody Map<String, Object> requestBody) {
 
-        //String a = requestBody.get("inputString");
-        String b = requestBody.get("targetLang").toString();
+        String sourceLang = (String) requestBody.get("sourceLang"); //출발언어
+        String content = (String) requestBody.get("content");    //번역할 내용
 
+        List<String> targetList = JsonConverter.deserializeObject(JsonConverter.serializeObject(requestBody.get("targetList"))
+                , new TypeReference<List<String>>() {}); //도착언어리스트
 
+        TranslateResponse translate = translatorSvc.doTranslate(sourceLang, content, targetList, request);
 
-        //String test = translatorSvc.translate("안녕", "en", request);
-
-        return null;
+        return translate.getTranslations();
     }
 }

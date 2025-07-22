@@ -1,18 +1,17 @@
 package yoon.hyeon.sang.translator.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
-import yoon.hyeon.sang.exception.ApiException;
 import yoon.hyeon.sang.translator.dto.Languages;
+import yoon.hyeon.sang.translator.dto.TranslateResponse;
 import yoon.hyeon.sang.translator.service.TranslatorSvc;
 import yoon.hyeon.sang.userObj.ApiResponse;
 import yoon.hyeon.sang.util.ApiRequester;
+import yoon.hyeon.sang.util.JsonConverter;
 import yoon.hyeon.sang.util.PropertiesUtil;
 import yoon.hyeon.sang.util.RedisUtil;
 
@@ -51,29 +50,17 @@ public class TranslatorSvcImpl implements TranslatorSvc {
         try {
             ApiResponse response = apiRequester.callApi(apiRequester.appendQueryParams(url, params), HttpMethod.GET, headers);
             if (response.isSuccess()) {
-                ObjectMapper mapper = new ObjectMapper();
-                List<Languages> languages = mapper.readValue(response.getResponseBody(), new TypeReference<List<Languages>>() {});
-
+                List<Languages> languages = JsonConverter.deserializeObject(response.getResponseBody(),
+                        new TypeReference<List<Languages>>() { });
                 languages.sort(Comparator.comparingInt(lang -> {
-
-                    if (destination.equals("source")){
-                        switch (lang.getLanguage().toUpperCase()) {
-                            case "KO": return 0;
-                            case "EN": return 1;
-                            case "ZH": return 2;
-                            case "JA": return 3;
-                            default: return 4;
-                        }
-                    }
-                    else {
-                        switch (lang.getLanguage().toUpperCase()) {
-                            case "KO": return 0;
-                            case "EN-US": return 1;
-                            case "ZH": return 2;    //chinese simplified
-                            case "ZH-HANT": return 3;   //chinese traditional
-                            case "JA": return 4;
-                            default: return 5;
-                        }
+                    switch(lang.getLanguage().toUpperCase()) {
+                        case "KO": return 0;
+                        case "EN":
+                        case "EN-US": return 1;
+                        case "ZH": return 2;        //chinese simplified
+                        case "ZH-HANT": return 3;   //chinese traditional
+                        case "JA": return 4;
+                        default: return 5;
                     }
                 }));
 
@@ -82,36 +69,63 @@ public class TranslatorSvcImpl implements TranslatorSvc {
             } else {
                 return Collections.emptyList();
             }
-        } catch(JsonProcessingException ex1) {
-            logger.error("Fail to deserialize ApiResponse", ex1);
+        } catch(Exception ex) {
+            return Collections.emptyList();
         }
-
-        return Collections.emptyList();
     }
 
     @Override
-    public String translate(String targetText, String targetLang, HttpServletRequest request) {
+    public TranslateResponse doTranslate(String sourceLang, String content, List<String> targetLangList, HttpServletRequest request) {
+        TranslateResponse responseList = new TranslateResponse();
+
         String url = "https://api-free.deepl.com/v2/translate";
+        ApiRequester apiRequester = new ApiRequester(getClass(), request);
 
         Map<String, String> headers = new HashMap<>();
         headers.put("Authorization", apiKey);
-        headers.put("Content-Type", "application/x-www-form-urlencoded");
         headers.put("Accept", "application/json");
 
         Map<String, Object> body = new HashMap<>();
-        body.put("text", targetText);
-        body.put("target_lang", targetLang);
-
-        ApiRequester apiRequester = new ApiRequester(getClass(), request);
-        ApiResponse response = apiRequester.callApi(url, HttpMethod.POST, headers, body);
-
-        if (response.isSuccess()){
-            int httpstatusCode = response.getStatusCode();
-            String responseBody = response.getResponseBody();
-        } else {
-
+        if (!sourceLang.isEmpty()) {
+            body.put("source_lang", sourceLang);
         }
 
-        return "";
+        for (String targetLang : targetLangList) {
+
+            if (targetLang.isEmpty()) {
+                continue;
+            }
+
+            body.put("text", Collections.singletonList(content));
+            body.put("target_lang", targetLang);
+
+            try {
+                ApiResponse response = apiRequester.callApi(url, HttpMethod.POST, headers, body);
+                if (response.isSuccess()) {
+                    TranslateResponse translate = JsonConverter.deserializeObject(response.getResponseBody(),
+                            new TypeReference<TranslateResponse>() {});
+                    for (TranslateResponse.Translations data : translate.getTranslations()) {
+                        data.setTargetLang(targetLang);
+                    }
+
+                    responseList.getTranslations().addAll(translate.getTranslations());
+                }
+                else {
+                    TranslateResponse.Translations errData = new TranslateResponse.Translations();
+                    errData.setTargetLang(targetLang);
+                    errData.setText("deepL번역기 API 요청에 실패했습니다");
+                    errData.setDetected_source_language(sourceLang);
+                    responseList.getTranslations().add(errData);
+                }
+            } catch(Exception ex){
+                TranslateResponse.Translations errData = new TranslateResponse.Translations();
+                errData.setTargetLang(targetLang);
+                errData.setText("deepL번역기 API 요청에 실패했습니다");
+                errData.setDetected_source_language(sourceLang);
+                responseList.getTranslations().add(errData);
+            }
+        }
+
+        return responseList;
     }
 }

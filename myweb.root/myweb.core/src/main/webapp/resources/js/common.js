@@ -196,8 +196,27 @@ function myFetch(input, init = {}) {
       }
     })
     .then(res => {
-      console.log(res.data.message);      //"처리 완료"
-      console.log(res.data.data.name);    //"홍길동"
+        //응답이 일반 String일때
+        const result = res.data; // 예: "Hello, world!"
+        console.log("String 응답:", result);
+
+        //응답이 배열일때(Array/List/Set)
+        const list = res.data; // 예: ["apple", "banana", "grape"]
+        list.forEach((item, index) => {
+            console.log(`Item ${index}: ${item}`);
+        });
+
+        //응답이 Map일때(객체형태)
+        const map = res.data; // 예: { name: "홍길동", age: 30, email: "test@example.com" }
+        for (const key in map) {
+            console.log(`${key} : ${map[key]}`);
+        }
+
+        // 또는 Object.entries 사용
+        Object.entries(map).forEach(([key, value]) => {
+            console.log(`${key}: ${value}`);
+        });
+
     })
     .catch(error => {
       console.error('에러 발생:', error);
@@ -239,7 +258,12 @@ function myFetch(input, init = {}) {
     @RequestMapping(value = "/api/test", method = RequestMethod.POST)
     public @ResponseBody Map<String, Object> postJson(@RequestBody Map<String, Object> payload) {
         String userId = String.valueOf(payload.get("userId"));
-        String name = String.valueOf(payload.get("name"));
+        String name = (String) payload.get("name");
+
+        ObjectMapper mapper = new ObjectMapper();
+        List<MyList> targetList = mapper.convertValue(requestBody.get("targetList"), new TypeReference<List<MyList>>() {})
+        List<String> sourceList = mapper.convertValue(requestBody.get("sourceList"), List.class);
+        List<String> sourceList = mapper.convertValue(requestBody.get("sourceList"), new TypeReference<List<String>>() {});   //제네릭 안정성 보장
         ...
     }
 

@@ -10,20 +10,9 @@ public class Languages {
     private String name;
 
     @JsonProperty("supports_formality")
-    private boolean supports_formality;
+    private Boolean supports_formality;
 
     public Languages() {
-    }
-
-    public Languages(String code, String name){
-        this.language = code;
-        this.name = name;
-    }
-
-    public Languages(String code, String name, boolean supports_formality) {
-        this.language = code;
-        this.name = name;
-        this.supports_formality = supports_formality;
     }
 
     public String getLanguage() {
@@ -42,11 +31,11 @@ public class Languages {
         this.name = name;
     }
 
-    public boolean isSupports_formality() {
+    public Boolean getSupports_formality() {
         return supports_formality;
     }
 
-    public void setSupports_formality(boolean supports_formality) {
+    public void setSupports_formality(Boolean supports_formality) {
         this.supports_formality = supports_formality;
     }
 }
